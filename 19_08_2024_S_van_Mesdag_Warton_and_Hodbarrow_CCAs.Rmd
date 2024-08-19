@@ -1,0 +1,849 @@
+---
+title: "19_08_2024_S_van_Mesdag_Warton_and_Hodbarrow_CCAs"
+author: "Savanna van Mesdag"
+date: "2024-08-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+##The following is written by Savanna van Mesdag, going through the relevant coding and analyses for CCAs and ANOSIMs for the plant and substrate data for the Warton slag bank and the RSPB Hodbarrow Nature Reserve.
+
+#setwd#
+
+#To run the following code to carry out the analyses, the following packages must be installed#
+
+```{R}
+
+install.packages("vegan", repos = "https://github.com/vegandevs/vegan")
+
+install.packages("ggplot2", repos = "https://github.com/tidyverse/ggplot2")
+
+```
+
+#Once installed, then need to load these r packages...
+
+```{R}
+
+
+library(vegan)
+library(ggplot2)
+
+```
+#Loading the data files...
+
+##Carnforth Data
+
+```{R}
+
+urlfile11 <- 'https://raw.githubusercontent.com/Savannankvm/Canonical-correspondence-analyses-Warton-and-Hodbarrow/PhD-files/CarnforthPlantSpecies.csv'
+
+CarnforthPS <- read.csv(urlfile11, header = TRUE, colClasses = c("numeric"))
+
+urlfile12 <- 'https://raw.githubusercontent.com/Savannankvm/Canonical-correspondence-analyses-Warton-and-Hodbarrow/PhD-files/CARNFORTH_PLANT_CHEMISTRY_MG_KG.csv'
+
+CarnforthPC <-read.csv(urlfile12, header = TRUE, colClasses = c("numeric"))
+
+head(CarnforthPS)
+head(CarnforthPC)
+
+rowSums(CarnforthPS)
+
+```
+
+#Now for some ANOSIMs...
+
+#anoCSiO2 <- anosim(CarnforthPS, CarnforthPC$SiO2, distance = "bray", permutations = 9999)
+
+#When this ANOSIM is run, the error message: "there should be replicates within groups"
+#comes up. From now on, only variables that were tested successfully will be included.
+
+```{R}
+
+anoCMgO <- anosim(CarnforthPS, CarnforthPC$MgO, distance = "bray", permutations = 9999)
+
+anoCMgO
+
+anoCCr2O3 <- anosim(CarnforthPS, CarnforthPC$Cr2O3, distance = "bray", permutations = 9999)
+
+anoCCr2O3
+
+anoCP2O5 <- anosim(CarnforthPS, CarnforthPC$P2O5, distance = "bray", permutations = 9999)
+
+anoCP2O5
+
+anoCSrO <- anosim(CarnforthPS, CarnforthPC$SrO, distance = "bray", permutations = 9999)
+
+anoCSrO
+
+anoCBaO <- anosim(CarnforthPS, CarnforthPC$BaO, distance = "bray", permutations = 9999)
+
+anoCBaO
+
+anoCAg <- anosim(CarnforthPS, CarnforthPC$Ag, distance = "bray", permutations = 9999)
+
+anoCAg
+
+anoCAs <- anosim(CarnforthPS, CarnforthPC$As, distance = "bray", permutations = 9999)
+
+anoCAs
+
+anoCB <- anosim(CarnforthPS, CarnforthPC$B, distance = "bray", permutations = 9999)
+
+anoCB
+
+anoCBe <- anosim(CarnforthPS, CarnforthPC$Be, distance = "bray", permutations = 9999)
+
+anoCBe
+
+anoCCd <- anosim(CarnforthPS, CarnforthPC$Cd, distance = "bray", permutations = 9999)
+
+anoCCd
+
+anoCCo <- anosim(CarnforthPS, CarnforthPC$Co, distance = "bray", permutations = 9999)
+
+anoCCo
+
+anoCCu <- anosim(CarnforthPS, CarnforthPC$Cu, distance = "bray", permutations = 9999)
+
+anoCCu
+
+anoCMo <- anosim(CarnforthPS, CarnforthPC$Mo, distance = "bray", permutations = 9999)
+
+anoCMo
+
+anoCNi <- anosim(CarnforthPS, CarnforthPC$Ni, distance = "bray", permutations = 9999)
+
+anoCNi
+
+anoCPb <- anosim(CarnforthPS, CarnforthPC$Pb, distance = "bray", permutations = 9999)
+
+anoCPb
+
+anoCSb <- anosim(CarnforthPS, CarnforthPC$Sb, distance = "bray", permutations = 9999)
+
+anoCSb
+
+anoCSc <- anosim(CarnforthPS, CarnforthPC$Sc, distance = "bray", permutations = 9999)
+
+anoCSc
+
+anoCV <- anosim(CarnforthPS, CarnforthPC$V, distance = "bray", permutations = 9999)
+
+anoCV
+
+#None of the ANOSIM tests led to stastistically significant results. Because of this,
+#CCAs might not be entirely appropriate to represent the data visually.
+#NMDS analyses will be utilised to visualise the plant data.
+
+```
+
+```{R}
+
+CarnforthNMDS <- metaMDS(CarnforthPS)
+
+plot(CarnforthNMDS)
+
+```
+
+#As in the other NMDS plots, species are represented by red crosses and communities are 
+#represented by circles.
+
+
+```{R}
+
+CarnforthNMDS
+
+plot(CarnforthNMDS, "sites")   # Produces distance 
+plot(CarnforthNMDS, "species")
+orditorp(CarnforthNMDS, "species")
+
+```
+
+#What is interesting about this NMDS is that most of the species are separated out, with 
+#very little clustering or 'clumping'. This contrasts greatly with the NMDS plots
+#for Fallin Bing, Addiewell Bing and South Bank Wood (Penicuik). It might still be
+#useful to look at a CCA for Carnforth as well...
+
+```{R}
+
+CarnforthCCA <- cca(CarnforthPS, CarnforthPC)
+print(CarnforthCCA)
+plot(CarnforthCCA)
+
+CarnforthCCA1 <- cca(CarnforthPS ~ Na2O + Co + SrO + Al2O3 + Calcite,
+                     data = CarnforthPC)
+
+print(CarnforthCCA1)
+plot(CarnforthCCA1)
+anova(CarnforthCCA1)
+
+```
+
+##An F statistic of 1.4478 and a low p value of 0.008.
+
+
+```{R}
+
+CarnforthCCA2 <- cca(CarnforthPS ~ Na2O + Co +SrO + Al2O3 + Calcite + MgO,
+                     data = CarnforthPC)
+
+print(CarnforthCCA2)
+plot(CarnforthCCA2)
+anova(CarnforthCCA2)
+
+```
+
+##An F statistic of 1.6947 and a low p value of 0.002.
+
+```{R}
+
+CarnforthCCA3 <- cca(CarnforthPS ~ Na2O + Co + P2O5 + Al2O3, data = CarnforthPC)
+print(CarnforthCCA3)
+plot(CarnforthCCA3)
+anova(CarnforthCCA3)
+
+```
+
+#An F statistic of 1.0245 and a p value of 0.382.
+
+
+```{R}
+
+CarnforthCCA4 <- cca(CarnforthPS ~ pH_level + Co +SrO + Al2O3 + Calcite + MgO,
+                     data = CarnforthPC)
+
+print(CarnforthCCA4)
+plot(CarnforthCCA4)
+anova(CarnforthCCA4)
+
+```
+
+#An F statistic of 1.3792 and a p value of 0.01.
+
+```{R}
+
+CarnforthCCA5 <- cca(CarnforthPS ~ pH_level + Co + As + Al2O3 + Calcite + MgO,
+                     data = CarnforthPC)
+
+print(CarnforthCCA5)
+plot(CarnforthCCA5)
+anova(CarnforthCCA5)
+
+```
+
+#An F statistic of 1.243 and a p value of 0.089.
+
+
+```{R}
+
+CarnforthCCA6 <- cca(CarnforthPS ~ Na2O + Co +SrO + Al2O3 + Calcite + V,
+                     data = CarnforthPC)
+
+print(CarnforthCCA6)
+plot(CarnforthCCA6)
+anova(CarnforthCCA6)
+
+```
+
+#An F statistic of 1.1857 and a p value of 0.104.
+
+```{R}
+
+CarnforthCCA7 <- cca(CarnforthPS ~ Na2O + Co +SrO + Al2O3 + Ag + MgO,
+                     data = CarnforthPC)
+
+print(CarnforthCCA7)
+plot(CarnforthCCA7)
+anova(CarnforthCCA7)
+
+```
+
+#An F statistic of 1.6165 and a p value of 0.003.
+
+```{R}
+
+CarnforthCCA8 <- cca(CarnforthPS ~ Na2O + Co +SrO + Al2O3 + BaO + MgO,
+                     data = CarnforthPC)
+
+print(CarnforthCCA8)
+plot(CarnforthCCA8)
+anova(CarnforthCCA8)
+
+```
+
+#An F statistic of 1.1518 and a p value of 0.147.
+
+
+```{R}
+
+CarnforthCCA9 <- cca(CarnforthPS ~ Na2O + Co +SrO + Al2O3 + Cr2O3 + MgO,
+                     data = CarnforthPC)
+
+print(CarnforthCCA9)
+plot(CarnforthCCA9)
+anova(CarnforthCCA9)
+
+```
+
+#An F statistic of 1.6442 and a p value of 0.002.
+
+```{R}
+
+CarnforthCCA9 <- cca(CarnforthPS ~ Na2O + Co +SrO + Al2O3 + Cd + MgO,
+                     data = CarnforthPC)
+
+print(CarnforthCCA9)
+plot(CarnforthCCA9)
+anova(CarnforthCCA9)
+
+```
+
+#An F statistic of 1.634 and a low p value of 0.002.
+
+```{R}
+
+CarnforthCCA10 <- cca(CarnforthPS ~ Na2O + Co +SrO + Cd + Calcite + MgO,
+                     data = CarnforthPC)
+
+print(CarnforthCCA10)
+plot(CarnforthCCA10)
+anova(CarnforthCCA10)
+
+```
+
+#An F statistic of 1.6287 and a low p value of 0.001.
+
+#After doing several CCAs with different combinations of chemical variables, the one with 
+#the highest F statistic, 1.6947, is CarnforthCCA2. This CCA also has a low p value of
+#0.002. The plot for this one looks good, but it can be made to be a little neater and 
+#easier to interpret...
+
+
+```{R}
+
+options(max.print=1000000)
+
+CarnforthCCA2$CCA$v
+
+#The "v values" show the positions of individual species on the graph, with the CCA1 value
+#representing the x axis and the CCA2 value representing the y axis, in the case of the
+#graph created in R.
+
+plot(CarnforthCCA2, xlim = c(-5, 5), ylim = c(-5, 5)) 
+
+#Increasing the xlim and ylim to give more room for writing on graph
+
+plot(CarnforthCCA2, choices = c(1,2), display = c("wa", "bp"), xlim = c(-4, 3),
+     ylim = c(-3, 2))
+
+#Increasing the xlim and ylim to give more room for writing on graph Note that Community
+#1 and Community 2 are grouped/clustered together in this CCA plot.
+
+points(x = 0.70197267, y = 1.9144914, pch = 15, col = "black")
+
+#This point represents Alopercus pratensis
+
+text('A. pratensis', x = 0.70197267, y = 1.9144914, cex = 0.88, pos = 2, col = "black")
+
+#Adding text to this point.
+
+points(x = -0.63005543, y = -0.1744372, pch = 15, col = "black")
+
+#This point represents Pilosella officinarum
+
+text('P. officinarum', x = -0.63005543, y = -0.1744372, cex = 0.88, pos = 2, col = "black")
+
+#Adding text to this point
+
+points(x = 2.78627371 , y = -2.1170901, pch = 15, col = "black")
+
+#This point represents Centaurium pulchellum
+
+text('C. pulchellum', x = 2.78627371, y = -2.1170901, cex = 0.88, pos = 2, col = "black")
+
+#Adding text to this point
+
+points(x = -1.03489039, y = -1.3036717, pch = 15, col = "black")
+
+#This point represents Fissidens exilis
+
+text('F. exilis', x = -1.03489039, y = -1.3036717, cex = 0.88, pos = 2, col = "black")
+
+#Adding text to this point
+
+points(x = 0.27967260, y = 0.4821115, pch = 15, col = "black")
+
+#This point represents Homalothecium lutescens
+
+text('H. lutescens', x = 0.27967260, y = 0.4821115, cex = 0.88, pos = 2, col = "black")
+
+#Adding text to this point
+
+```
+
+
+##Hodbarrow Data##
+
+```{R}
+
+urlfile13 <- 'https://raw.githubusercontent.com/Savannankvm/Canonical-correspondence-analyses-Warton-and-Hodbarrow/PhD-files/HodbarrowPlantSpecies.csv'
+
+HodbarrowPS <- read.csv(urlfile13,  header = TRUE, colClasses = c("numeric"))
+
+urlfile14 <- 'https://raw.githubusercontent.com/Savannankvm/Canonical-correspondence-analyses-Warton-and-Hodbarrow/PhD-files/HODBARROW_PLANT_CHEMISTRY_MG_KG.csv'
+
+HodbarrowPC <-read.csv(urlfile14, header = TRUE, 
+                       colClasses = c("numeric"))
+
+head(HodbarrowPS)
+head(HodbarrowPC)
+
+rowSums(HodbarrowPS)
+
+```
+
+```{R}
+
+#Again, ANOSIMs will be carried out to see if there are any statistically significant
+#differences between plants in different concentrations of elements.
+
+anoHSiO2 <- anosim(HodbarrowPS, HodbarrowPC$SiO2, distance = "bray", permutations = 9999)
+
+anoHSiO2
+
+#This ANOSIM has a high ANOSIM statistic of 1 and a low p value of 0.047619, showing that
+#there are statistically significant differences between plants in different silicon
+#concentrations on the Hodbarrow site.
+
+#anoHAl2O3 <- anosim(HodbarrowPS, HodbarrowPC$Al2O3, distance = "bray", permutations = 9999)
+
+#When this ANOSIM is run, the error message: "there should be replicates within groups"
+#comes up. From now on, only variables that were tested successfully will be included.
+
+anoHCr2O3 <- anosim(HodbarrowPS, HodbarrowPC$Cr2O3, distance = "bray", permutations = 9999)
+
+anoHCr2O3
+
+#This ANOSIM has a high R statistic of 0.963 and a low p value of 0.0095238. This shows that
+#there are significant differences between plants growing in different concentrations of
+#Cr2O3.
+
+anoHTiO2 <- anosim(HodbarrowPS, HodbarrowPC$TiO2, distance = "bray", permutations = 9999)
+
+anoHTiO2
+
+anoHMnO <- anosim(HodbarrowPS, HodbarrowPC$MnO, distance = "bray", permutations = 9999)
+
+anoHMnO
+
+anoHP2O5 <- anosim(HodbarrowPS, HodbarrowPC$P2O5, distance = "bray", permutations = 9999)
+
+anoHP2O5
+
+#This ANOSIM has a high R statistic of 0.963 and a low p value of 0.0095238. There are
+#significant differences between plants in different concentrations of P2O5 in
+#Hodbarrow.
+
+anoHSrO <- anosim(HodbarrowPS, HodbarrowPC$SrO, distance = "bray", permutations = 9999)
+
+anoHSrO
+
+#This ANOSIM has an R statistic of 0.5556 and a p value of 0.047619. This shows that there
+#are significant differences between plants growing in different concentrations of SrO
+#in Hodbarrow, although the R statistic indicates that this isn't quite as strong as the
+#differences seen in, say, SiO2, or Cr2O3.
+
+anoHBaO <- anosim(HodbarrowPS, HodbarrowPC$BaO, distance = "bray", permutations = 9999)
+
+anoHBaO
+
+anoHAg <- anosim(HodbarrowPS, HodbarrowPC$Ag, distance = "bray", permutations = 9999)
+
+anoHAg
+
+#This ANOSIM has a high R statistic of 0.8947 and a low p value of 0.028571. This 
+#demonstrates that plants are significantly different in differing concentrations of Ag
+#at Hodbarrow.
+
+anoHAs <- anosim(HodbarrowPS, HodbarrowPC$As, distance = "bray", permutations = 9999)
+
+anoHAs
+
+anoHB <- anosim(HodbarrowPS, HodbarrowPC$B, distance = "bray", permutations = 9999)
+
+anoHB
+
+anoHCo <- anosim(HodbarrowPS, HodbarrowPC$Co, distance = "bray", permutations = 9999)
+
+anoHCo
+
+#This ANOSIM has a high R statistic of 0.8421 and a low p value of 0.038095. This
+#demonstrates that plants are significantly different in differing concentrations of Co at
+#Hodbarrow.
+
+anoHCu <- anosim(HodbarrowPS, HodbarrowPC$Cu, distance = "bray", permutations = 9999)
+
+anoHCu
+
+anoHNi <- anosim(HodbarrowPS, HodbarrowPC$Ni, distance = "bray", permutations = 9999)
+
+anoHNi
+
+#This ANOSIM has a high R statistic of 1 and a low p value of 0.047619. This demonstrates
+#significant differences between plants growing in different concentrations of Ni at
+#Hodbarrow.
+
+anoHS <- anosim(HodbarrowPS, HodbarrowPC$S, distance = "bray", permutations = 9999)
+
+anoHS
+
+#With a high R statistic of 1 and a low p value of 0.047619, this ANOSIM shows that there
+#are significant differences between plants growing in different concentraitons of S at
+#Hodbarrow.
+
+anoHSb <- anosim(HodbarrowPS, HodbarrowPC$Sb, distance = "bray", permutations = 9999)
+
+anoHSb
+
+#This ANOSIM has a high R statistic of 0.8421 and a low p value of 0.038095, showing that
+#plants significantly differ in different concentrations of Sb at Hodbarrow.
+
+anoHSc <- anosim(HodbarrowPS, HodbarrowPC$Sc, distance = "bray", permutations = 9999)
+
+anoHSc
+
+anoHTi <- anosim(HodbarrowPS, HodbarrowPC$Ti, distance = "bray", permutations = 9999)
+
+anoHTi
+
+anoHV <- anosim(HodbarrowPS, HodbarrowPC$V, distance = "bray", permutations = 9999)
+
+anoHV
+
+#After carrying ANOSIMs for all of the geochemical variables, several of them demonstrated
+#significant differences in terms of their relation to plant growth. CCA plots will better
+#represent the data than NMDS plots, so some will be generated now to find the most
+#appropriate CCA for the data.
+
+```
+
+```{R}
+
+
+HodbarrowCCA <- cca(HodbarrowPS, HodbarrowPC)
+
+print(HodbarrowCCA)
+plot(HodbarrowCCA)
+
+HodbarrowCCA1 <- cca(HodbarrowPS ~ CaO + Al2O3 + SiO2,
+                     data = HodbarrowPC)
+
+print(HodbarrowCCA1)
+plot(HodbarrowCCA1)
+anova(HodbarrowCCA1)
+
+```
+
+#High F statistic of 2.9878 and low p value of 0.001.
+
+#With such a high F statistic, it may be tempting to say that this is the most suitable
+#CCA, but a few more can be constructed, including with some of the variables that
+#were shown to be significant in the ANOSIMs.
+
+```{R}
+
+HodbarrowCCA2 <- cca(HodbarrowPS ~ SiO2 + Cr2O3 + P2O5,
+                     data = HodbarrowPC)
+
+print(HodbarrowCCA2)
+plot(HodbarrowCCA2)
+anova(HodbarrowCCA2)
+
+```
+
+#High F statistic of 2.7373 and low p value of 0.003.
+
+```{R}
+
+HodbarrowCCA3 <- cca(HodbarrowPS ~ SrO + Co + Ni,
+                     data = HodbarrowPC)
+
+print(HodbarrowCCA3)
+plot(HodbarrowCCA3)
+anova(HodbarrowCCA3)
+
+```
+
+#F statistic of 1.6452 and p value of 0.05.
+
+
+```{R}
+
+HodbarrowCCA3 <- cca(HodbarrowPS ~ SrO + Co + Ni,
+                     data = HodbarrowPC)
+
+print(HodbarrowCCA3)
+plot(HodbarrowCCA3)
+anova(HodbarrowCCA3)
+
+```
+
+#F statistic of 1.6452 and p value of 0.053.
+
+```{R}
+
+HodbarrowCCA4 <- cca(HodbarrowPS ~ S + Sb + Ni,
+                     data = HodbarrowPC)
+
+print(HodbarrowCCA4)
+plot(HodbarrowCCA4)
+anova(HodbarrowCCA4)
+
+```
+
+#High F statistic of 1.9874 and p value of 0.015.
+
+```{R}
+
+HodbarrowCCA5 <- cca(HodbarrowPS ~ Ag + Al2O3 + As,
+                     data = HodbarrowPC)
+
+print(HodbarrowCCA5)
+plot(HodbarrowCCA5)
+anova(HodbarrowCCA5)
+
+```
+
+#High F statistic of 2.0674 and low p value of 0.001.
+
+```{R}
+
+HodbarrowCCA6 <- cca(HodbarrowPS ~ Ag + Al2O3 + As + SiO2,
+                     data = HodbarrowPC)
+
+print(HodbarrowCCA6)
+plot(HodbarrowCCA6)
+anova(HodbarrowCCA6)
+
+```
+
+#High F statistic of 2.0176 and low p value of 0.018.
+
+```{R}
+
+HodbarrowCCA7 <- cca(HodbarrowPS ~ Ag + SrO + As + Cr2O3,
+                     data = HodbarrowPC)
+
+print(HodbarrowCCA7)
+plot(HodbarrowCCA7)
+anova(HodbarrowCCA7)
+
+```
+
+#High F statistic of 2.3256 and low p value of 0.003.
+
+```{R}
+
+HodbarrowCCA8 <- cca(HodbarrowPS ~ SiO2 + SrO + As + Cr2O3,
+                     data = HodbarrowPC)
+
+print(HodbarrowCCA8)
+plot(HodbarrowCCA8)
+anova(HodbarrowCCA8)
+
+```
+
+#F statistic of 1.7795 and p value of 0.024.
+
+```{R}
+
+HodbarrowCCA9 <- cca(HodbarrowPS ~ Ag + SrO + As + P2O5,
+                     data = HodbarrowPC)
+
+print(HodbarrowCCA9)
+plot(HodbarrowCCA9)
+anova(HodbarrowCCA9)
+
+```
+
+#High F statistic of 2.4366 and low p value of 0.005.
+
+```{R}
+
+HodbarrowCCA10 <- cca(HodbarrowPS ~ Ag + SrO + As + Cr2O3 + SiO2,
+                     data = HodbarrowPC)
+
+print(HodbarrowCCA10)
+plot(HodbarrowCCA10)
+anova(HodbarrowCCA10)
+
+```
+
+#F statistic of 2.3054 and p value of 0.008.
+
+```{R}
+
+HodbarrowCCA11 <- cca(HodbarrowPS ~ Cd + Mo + BaO + V + Na2O,
+                      data = HodbarrowPC)
+
+print(HodbarrowCCA11)
+plot(HodbarrowCCA11)
+anova(HodbarrowCCA11)
+
+```
+
+#Particularly high F statistic of 6.275 and p value of 0.001.
+
+```{R}
+
+HodbarrowCCA12 <- cca(HodbarrowPS ~ Cr2O3 + Be + BaO + Zn + TiO2,
+                      data = HodbarrowPC)
+
+print(HodbarrowCCA12)
+plot(HodbarrowCCA12)
+anova(HodbarrowCCA12)
+
+```
+
+#F statistic of 1.7444 and p value of 0.053.
+
+```{R}
+
+HodbarrowCCA13 <- cca(HodbarrowPS ~ Cr2O3 + Be + BaO + SiO2 + TiO2,
+                      data = HodbarrowPC)
+
+print(HodbarrowCCA13)
+plot(HodbarrowCCA13)
+anova(HodbarrowCCA13)
+
+```
+
+#High F statistic of 6.1483 and p value of 0.001.
+
+```{R}
+
+HodbarrowCCA14 <- cca(HodbarrowPS ~ Cr2O3 + SiO2 + BaO + Zn + TiO2,
+                      data = HodbarrowPC)
+
+print(HodbarrowCCA14)
+plot(HodbarrowCCA14)
+anova(HodbarrowCCA14)
+
+```
+
+#High F statistic of 2.9944 and p value of 0.006.
+
+```{R}
+
+HodbarrowCCA15 <- cca(HodbarrowPS ~ Cr2O3 + SiO2 + BaO + TiO2 + pH,
+                      data = HodbarrowPC)
+
+print(HodbarrowCCA15)
+plot(HodbarrowCCA15)
+anova(HodbarrowCCA15)
+
+```
+
+#F statistic of 1.6579 and p value of 0.052.
+
+```{R}
+
+HodbarrowCCA16 <- cca(HodbarrowPS ~ Cr2O3 + SiO2 + Be + TiO2 + pH,
+                      data = HodbarrowPC)
+
+print(HodbarrowCCA16)
+plot(HodbarrowCCA16)
+anova(HodbarrowCCA16)
+
+```
+#This CCA has a somewhat high F statistic of 1.7218 and a p value of 0.056.
+
+```{R}
+
+HodbarrowCCA17 <- cca(HodbarrowPS ~ Na2O + SiO2 + Be + BaO + TiO2,
+                      data = HodbarrowPC)
+
+print(HodbarrowCCA17)
+plot(HodbarrowCCA17)
+anova(HodbarrowCCA17)
+
+```
+#This CCA has a high F statistic of 5.2067 and a low p value of 0.003.
+
+
+#After doing a few more CCAs, the one with the highest F statistic by far (6.1483) is 
+#HodbarrowCCA13. The p value of this one is also low, at 0.001.
+#The plot for this CCA looks OK, but it can be modified to make it easier 
+#to interpret what is going on with some of the different plant species and communities.
+
+
+```{R}
+
+options(max.print=1000000)
+
+HodbarrowCCA13$CCA$v
+
+#The "v values" show the positions of individual species on the graph, with the CCA1 value
+#representing the x axis and the CCA2 value representing the y axis, in the case of the
+#graph created in R.
+
+plot(HodbarrowCCA13, xlim = c(-5, 5), ylim = c(-5, 5)) 
+
+#Increasing the xlim and ylim to give more room for writing on graph
+
+plot(HodbarrowCCA13, choices = c(1,2), display = c("wa", "bp"), xlim = c(-4, 3),
+     ylim = c(-3, 2))
+
+#Increasing the xlim and ylim to give more room for writing on graph Note that Community
+#2 and Community 3 are grouped/clustered together in this CCA plot and that Communities
+#1, 5, 6 and 7 are grouped together.
+
+points(x = -1.8808682 , y = 0.515930843, pch = 15, col = "black")
+
+#This point represents Equisetum variegatum
+
+text('E. variegatum', x = -1.8808682, y = 0.515930843, cex = 0.88, pos = 2, col = "black")
+
+#Adding text to this point.
+
+points(x = 0.5789231 , y = 0.322731125, pch = 15, col = "black")
+
+#This point represents Poa annua
+
+text('P. annua', x = 0.5789231 , y = 0.322731125, cex = 0.88, pos = 2, col = "black")
+
+#Adding text to this point
+
+points(x = 0.1102516, y = -2.221116290, pch = 15, col = "black")
+
+#This point represents Trifolium pratense
+
+text('T. pratense', x = 0.1102516, y = -2.221116290, cex = 0.88, pos = 2, col = "black")
+
+#Adding text to this point
+
+points(x = 0.3192237, y = -1.513567295, pch = 15, col = "black")
+
+#This point represents Linum catharticum
+
+text('L. catharticum', x = 0.3192237, y = -1.513567295, cex = 0.88, pos = 2, col = "black")
+
+#Adding text to this point
+
+points(x = 0.8513919, y = 1.041042224, pch = 15, col = "black")
+
+#This point represents Anthyllis vulneraria
+
+text('A. vulneraria', x = 0.8513919, y = 1.041042224, cex = 0.88, pos = 2, col = "black")
+
+#Adding text to this point
+
+```
+
